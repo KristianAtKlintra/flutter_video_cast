@@ -28,22 +28,14 @@ class MethodChannelAirPlay extends AirPlayPlatform {
   Stream<AirPlayEvent> _events(int id) => _eventStreamController.stream.where((event) => event.id == id);
 
   @override
-<<<<<<< HEAD
   Future<void> init(int id) {
-=======
-  Future<void> init(int id) async {
->>>>>>> efc510aa2f891522ece4ffc7e22d9c59bda7aeb7
     MethodChannel? channel;
     if (!_channels.containsKey(id)) {
       channel = MethodChannel('flutter_video_cast/airPlay_$id');
       channel.setMethodCallHandler((call) => _handleMethodCall(call, id));
       _channels[id] = channel;
     }
-<<<<<<< HEAD
     return channel!.invokeMethod<void>('airPlay#wait');
-=======
-    await channel?.invokeMethod<void>('airPlay#wait');
->>>>>>> efc510aa2f891522ece4ffc7e22d9c59bda7aeb7
   }
 
   @override

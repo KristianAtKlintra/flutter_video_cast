@@ -71,16 +71,10 @@ class MethodChannelChromeCast extends ChromeCastPlatform {
   }
 
   @override
-<<<<<<< HEAD
   Future<void> loadMedia(String url, Map<String, dynamic> meta,
       {required int id}) {
     final Map<String, dynamic> args = {'url': url};
     args.addAll(meta);
-
-=======
-  Future<void> loadMedia(String url, {required int id}) {
-    final Map<String, dynamic> args = {'url': url};
->>>>>>> efc510aa2f891522ece4ffc7e22d9c59bda7aeb7
     return channel(id)!.invokeMethod<void>('chromeCast#loadMedia', args);
   }
 
@@ -101,7 +95,6 @@ class MethodChannelChromeCast extends ChromeCastPlatform {
       'interval': interval
     };
     return channel(id)!.invokeMethod<void>('chromeCast#seek', args);
-<<<<<<< HEAD
   }
 
   @override
@@ -140,7 +133,7 @@ class MethodChannelChromeCast extends ChromeCastPlatform {
   Future<Duration> position({required int id}) async {
     return Duration(
       milliseconds:
-          (await channel(id)!.invokeMethod<int>('chromeCast#position')) ?? 0,
+      (await channel(id)!.invokeMethod<int>('chromeCast#position')) ?? 0,
     );
   }
 
@@ -148,25 +141,8 @@ class MethodChannelChromeCast extends ChromeCastPlatform {
   Future<Duration> duration({required int id}) async {
     return Duration(
       milliseconds:
-          (await channel(id)!.invokeMethod<int>('chromeCast#duration')) ?? 0,
+      (await channel(id)!.invokeMethod<int>('chromeCast#duration')) ?? 0,
     );
-=======
-  }
-
-  @override
-  Future<void> stop({int? id}) async {
-    await channel(id)?.invokeMethod<void>('chromeCast#stop');
-  }
-
-  @override
-  Future<bool> isConnected({required int id}) async {
-    return await channel(id)?.invokeMethod<bool>('chromeCast#isConnected') ?? false;
-  }
-
-  @override
-  Future<bool> isPlaying({required int id}) async {
-    return await channel(id)?.invokeMethod<bool>('chromeCast#isPlaying') ?? false;
->>>>>>> efc510aa2f891522ece4ffc7e22d9c59bda7aeb7
   }
 
   Future<dynamic> _handleMethodCall(MethodCall call, int id) async {
