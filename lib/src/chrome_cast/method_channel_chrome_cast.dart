@@ -71,11 +71,16 @@ class MethodChannelChromeCast extends ChromeCastPlatform {
   }
 
   @override
+<<<<<<< HEAD
   Future<void> loadMedia(String url, Map<String, dynamic> meta,
       {required int id}) {
     final Map<String, dynamic> args = {'url': url};
     args.addAll(meta);
 
+=======
+  Future<void> loadMedia(String url, {required int id}) {
+    final Map<String, dynamic> args = {'url': url};
+>>>>>>> efc510aa2f891522ece4ffc7e22d9c59bda7aeb7
     return channel(id)!.invokeMethod<void>('chromeCast#loadMedia', args);
   }
 
@@ -96,6 +101,7 @@ class MethodChannelChromeCast extends ChromeCastPlatform {
       'interval': interval
     };
     return channel(id)!.invokeMethod<void>('chromeCast#seek', args);
+<<<<<<< HEAD
   }
 
   @override
@@ -144,6 +150,23 @@ class MethodChannelChromeCast extends ChromeCastPlatform {
       milliseconds:
           (await channel(id)!.invokeMethod<int>('chromeCast#duration')) ?? 0,
     );
+=======
+  }
+
+  @override
+  Future<void> stop({int? id}) async {
+    await channel(id)?.invokeMethod<void>('chromeCast#stop');
+  }
+
+  @override
+  Future<bool> isConnected({required int id}) async {
+    return await channel(id)?.invokeMethod<bool>('chromeCast#isConnected') ?? false;
+  }
+
+  @override
+  Future<bool> isPlaying({required int id}) async {
+    return await channel(id)?.invokeMethod<bool>('chromeCast#isPlaying') ?? false;
+>>>>>>> efc510aa2f891522ece4ffc7e22d9c59bda7aeb7
   }
 
   Future<dynamic> _handleMethodCall(MethodCall call, int id) async {
@@ -158,8 +181,7 @@ class MethodChannelChromeCast extends ChromeCastPlatform {
         _eventStreamController.add(RequestDidCompleteEvent(id));
         break;
       case 'chromeCast#requestDidFail':
-        _eventStreamController
-            .add(RequestDidFailEvent(id, call.arguments['error']));
+        _eventStreamController.add(RequestDidFailEvent(id, call.arguments['error']));
         break;
       default:
         throw MissingPluginException();
@@ -167,8 +189,7 @@ class MethodChannelChromeCast extends ChromeCastPlatform {
   }
 
   @override
-  Widget buildView(Map<String, dynamic> arguments,
-      PlatformViewCreatedCallback onPlatformViewCreated) {
+  Widget buildView(Map<String, dynamic> arguments, PlatformViewCreatedCallback onPlatformViewCreated) {
     if (defaultTargetPlatform == TargetPlatform.android) {
       return AndroidView(
         viewType: 'ChromeCastButton',

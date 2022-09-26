@@ -21,9 +21,13 @@ class ChromeCastButton extends StatelessWidget {
     this.onSessionEnded,
     this.onRequestCompleted,
     this.onRequestFailed,
+<<<<<<< HEAD
   })  : assert(
             defaultTargetPlatform == TargetPlatform.iOS ||
                 defaultTargetPlatform == TargetPlatform.android,
+=======
+  })  : assert(defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.android,
+>>>>>>> efc510aa2f891522ece4ffc7e22d9c59bda7aeb7
             '$defaultTargetPlatform is not supported by this plugin'),
         super(key: key);
 
@@ -57,7 +61,7 @@ class ChromeCastButton extends StatelessWidget {
       'red': color.red,
       'green': color.green,
       'blue': color.blue,
-      'alpha': color.alpha
+      'alpha': color.alpha,
     };
     return SizedBox(
       width: size,
@@ -67,6 +71,7 @@ class ChromeCastButton extends StatelessWidget {
   }
 
   Future<void> _onPlatformViewCreated(int id) async {
+<<<<<<< HEAD
     final ChromeCastController controller = await ChromeCastController.init(id);
     if (onButtonCreated != null) {
       onButtonCreated!(controller);
@@ -91,5 +96,13 @@ class ChromeCastButton extends StatelessWidget {
           .onRequestFailed(id: id)
           .listen((event) => onRequestFailed!(event.error));
     }
+=======
+    final controller = await ChromeCastController.init(id);
+    onButtonCreated?.call(controller);
+    _chromeCastPlatform.onSessionStarted(id: id).listen((_) => onSessionStarted?.call());
+    _chromeCastPlatform.onSessionEnded(id: id).listen((_) => onSessionEnded?.call());
+    _chromeCastPlatform.onRequestCompleted(id: id).listen((_) => onRequestCompleted?.call());
+    _chromeCastPlatform.onRequestFailed(id: id).listen((event) => onRequestFailed?.call(event.error));
+>>>>>>> efc510aa2f891522ece4ffc7e22d9c59bda7aeb7
   }
 }
