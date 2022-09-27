@@ -112,7 +112,7 @@ class ChromeCastController: NSObject, FlutterPlatformView {
         }
     }
 
-    private func loadMedia(args: Any?) {
+    /*private func loadMedia(args: Any?) {
         guard
             let args = args as? [String: Any],
             let url = args["url"] as? String,
@@ -121,6 +121,25 @@ class ChromeCastController: NSObject, FlutterPlatformView {
                 return
         }
         let mediaInformation = GCKMediaInformationBuilder(contentURL: mediaUrl).build()
+        if let request = sessionManager.currentCastSession?.remoteMediaClient?.loadMedia(mediaInformation) {
+            request.delegate = self
+        }
+    }*/
+
+    private func loadMedia(args: Any?) {
+        guard
+            let args = args as? [String: Any],
+            let url = args["url"] as? String,
+            let image = args["image"] as? String,
+            let title = args["title"] as? String,
+            let mediaUrl = URL(string: url), let imageUrl = URL(string: image)  else {
+                print("Invalid URL")
+                return
+        }
+                
+        let mediaInformation = GCKMediaInformationBuilder(contentURL: mediaUrl).build();
+        mediaInformation.metadata?.addImage(GCKImage(url: imageUrl, width: 480, height: 360))
+        mediaInformation.metadata?.setString(title, forKey: kGCKMetadataKeyTitle)
         if let request = sessionManager.currentCastSession?.remoteMediaClient?.loadMedia(mediaInformation) {
             request.delegate = self
         }
