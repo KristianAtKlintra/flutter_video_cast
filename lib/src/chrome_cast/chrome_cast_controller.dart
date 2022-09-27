@@ -86,4 +86,9 @@ class ChromeCastController {
   Future<Duration> duration() {
     return _chromeCastPlatform.duration(id: id);
   }
+
+  /// Returns video duration.
+  Future<void> presentDefaultExpandedMediaControls() {
+    return _chromeCastPlatform.presentDefaultExpandedMediaControls(id: id);
+  }
 }
