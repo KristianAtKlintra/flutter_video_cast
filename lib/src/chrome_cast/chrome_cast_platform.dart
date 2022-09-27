@@ -52,8 +52,8 @@ abstract class ChromeCastPlatform {
 
   /// Load a new media by providing an [url].
   Future<void> loadMedia(
-      String url,
-      Map<String, dynamic> meta, {
+    String url,
+    Map<String, dynamic> meta, {
     required int id,
   }) {
     throw UnimplementedError('loadMedia() has not been implemented.');
@@ -108,6 +108,11 @@ abstract class ChromeCastPlatform {
 
   Future<Duration> position({required int id}) {
     throw UnimplementedError('position() has not been implemented.');
+  }
+
+  Future<void> presentDefaultExpandedMediaControls({required int id}) {
+    throw UnimplementedError(
+        'presentDefaultExpandedMediaControls() has not been implemented.');
   }
 
   Future<Duration> duration({required int id}) {

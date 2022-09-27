@@ -133,15 +133,21 @@ class MethodChannelChromeCast extends ChromeCastPlatform {
   Future<Duration> position({required int id}) async {
     return Duration(
       milliseconds:
-      (await channel(id)!.invokeMethod<int>('chromeCast#position')) ?? 0,
+          (await channel(id)!.invokeMethod<int>('chromeCast#position')) ?? 0,
     );
+  }
+
+  @override
+  Future<void> presentDefaultExpandedMediaControls({required int id}) async {
+    return channel(id)!
+        .invokeMethod<void>('chromeCast#presentDefaultExpandedMediaControls');
   }
 
   @override
   Future<Duration> duration({required int id}) async {
     return Duration(
       milliseconds:
-      (await channel(id)!.invokeMethod<int>('chromeCast#duration')) ?? 0,
+          (await channel(id)!.invokeMethod<int>('chromeCast#duration')) ?? 0,
     );
   }
 
@@ -157,7 +163,8 @@ class MethodChannelChromeCast extends ChromeCastPlatform {
         _eventStreamController.add(RequestDidCompleteEvent(id));
         break;
       case 'chromeCast#requestDidFail':
-        _eventStreamController.add(RequestDidFailEvent(id, call.arguments['error']));
+        _eventStreamController
+            .add(RequestDidFailEvent(id, call.arguments['error']));
         break;
       default:
         throw MissingPluginException();
@@ -165,7 +172,8 @@ class MethodChannelChromeCast extends ChromeCastPlatform {
   }
 
   @override
-  Widget buildView(Map<String, dynamic> arguments, PlatformViewCreatedCallback onPlatformViewCreated) {
+  Widget buildView(Map<String, dynamic> arguments,
+      PlatformViewCreatedCallback onPlatformViewCreated) {
     if (defaultTargetPlatform == TargetPlatform.android) {
       return AndroidView(
         viewType: 'ChromeCastButton',

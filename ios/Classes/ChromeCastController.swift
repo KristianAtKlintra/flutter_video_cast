@@ -101,15 +101,21 @@ class ChromeCastController: NSObject, FlutterPlatformView {
         case "chromeCast#addSessionListener":
             addSessionListener()
             result(nil)
+            break
         case "chromeCast#removeSessionListener":
             removeSessionListener()
             result(nil)
+            break
         case "chromeCast#position":
             result(position())
+            break
+        case "chromeCast#presentDefaultExpandedMediaControls":
+            presentDefaultExpandedMediaControls()
+            result(nil)
+            break
         default:
             result(nil)
             break
-        }
     }
 
     /*private func loadMedia(args: Any?) {
@@ -130,16 +136,25 @@ class ChromeCastController: NSObject, FlutterPlatformView {
         guard
             let args = args as? [String: Any],
             let url = args["url"] as? String,
-            let image = args["image"] as? String,
-            let title = args["title"] as? String,
-            let mediaUrl = URL(string: url), let imageUrl = URL(string: image)  else {
+            let mediaUrl = URL(string: url)  else {
                 print("Invalid URL")
                 return
         }
-                
-        let mediaInformation = GCKMediaInformationBuilder(contentURL: mediaUrl).build();
-        mediaInformation.metadata?.addImage(GCKImage(url: imageUrl, width: 480, height: 360))
-        mediaInformation.metadata?.setString(title, forKey: kGCKMetadataKeyTitle)
+        
+        let metadata = GCKMediaMetadata()
+        if args.keys.contains("title") {
+            metadata.setString(args["title"] as! String, forKey: kGCKMetadataKeyTitle)
+        }
+        if args.keys.contains("subtitle") {
+            metadata.setString(args["subtitle"] as! String, forKey: kGCKMetadataKeySubtitle)
+        }
+        if args.keys.contains("image") {
+            metadata.addImage(GCKImage(url: URL(string: args["image"] as! String)!, width: 960, height: 720))
+        }
+        let mediaInformationBuilder = GCKMediaInformationBuilder(contentURL: mediaUrl)
+        mediaInformationBuilder.metadata = metadata
+        let mediaInformation = mediaInformationBuilder.build()
+        
         if let request = sessionManager.currentCastSession?.remoteMediaClient?.loadMedia(mediaInformation) {
             request.delegate = self
         }
@@ -196,6 +211,10 @@ class ChromeCastController: NSObject, FlutterPlatformView {
 
     private func position() -> Int {        
         return Int(sessionManager.currentCastSession?.remoteMediaClient?.approximateStreamPosition() ?? 0) * 1000
+    }
+
+    private func presentDefaultExpandedMediaControls() {
+        return GCKCastContext.sharedInstance().presentDefaultExpandedMediaControls()
     }
 
 }
