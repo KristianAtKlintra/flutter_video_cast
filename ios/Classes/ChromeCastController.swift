@@ -113,9 +113,13 @@ class ChromeCastController: NSObject, FlutterPlatformView {
             presentDefaultExpandedMediaControls()
             result(nil)
             break
+        case "chromeCast#duration":
+            result(duration())
+            break
         default:
             result(nil)
             break
+        }
     }
 
     /*private func loadMedia(args: Any?) {
@@ -215,6 +219,10 @@ class ChromeCastController: NSObject, FlutterPlatformView {
 
     private func presentDefaultExpandedMediaControls() {
         return GCKCastContext.sharedInstance().presentDefaultExpandedMediaControls()
+    }
+
+    private func duration() -> Int {
+        return Int(sessionManager.currentCastSession?.remoteMediaClient?.approximateLiveSeekableRangeEnd() ?? 0) * 1000
     }
 
 }
