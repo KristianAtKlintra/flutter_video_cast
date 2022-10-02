@@ -119,6 +119,10 @@ abstract class ChromeCastPlatform {
     throw UnimplementedError('duration() has not been implemented.');
   }
 
+  Future<String?> metadata({required int id}) async {
+    throw UnimplementedError('metadata() has not been implemented.');
+  }
+
   /// Returns a widget displaying the button.
   Widget buildView(Map<String, dynamic> arguments,
       PlatformViewCreatedCallback onPlatformViewCreated) {

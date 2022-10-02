@@ -146,15 +146,22 @@ class ChromeCastController: NSObject, FlutterPlatformView {
         }
         
         let metadata = GCKMediaMetadata()
-        if args.keys.contains("title") {
-            metadata.setString(args["title"] as! String, forKey: kGCKMetadataKeyTitle)
+        if args.keys.contains(kGCKMetadataKeyTitle) {
+            metadata.setString(args[kGCKMetadataKeySubtitle] as! String, forKey: kGCKMetadataKeyTitle)
         }
-        if args.keys.contains("subtitle") {
-            metadata.setString(args["subtitle"] as! String, forKey: kGCKMetadataKeySubtitle)
+        if args.keys.contains(kGCKMetadataKeySubtitle) {
+            metadata.setString(args[kGCKMetadataKeySubtitle] as! String, forKey: kGCKMetadataKeySubtitle)
         }
-        if args.keys.contains("image") {
-            metadata.addImage(GCKImage(url: URL(string: args["image"] as! String)!, width: 960, height: 720))
+        if args.keys.contains("Image") {
+            metadata.addImage(GCKImage(url: URL(string: args["Image"] as! String)!, width: 960, height: 720))
         }
+
+        for k in args.keys {
+            if k.starts(with: "KVF_") {
+                metadata.setString(args[k] as! String, forKey: k)
+            }
+        }
+
         let mediaInformationBuilder = GCKMediaInformationBuilder(contentURL: mediaUrl)
         mediaInformationBuilder.metadata = metadata
         let mediaInformation = mediaInformationBuilder.build()
@@ -222,7 +229,8 @@ class ChromeCastController: NSObject, FlutterPlatformView {
     }
 
     private func duration() -> Int {
-        return Int(sessionManager.currentCastSession?.remoteMediaClient?.approximateLiveSeekableRangeEnd() ?? 0) * 1000
+        let dur = sessionManager.currentCastSession?.remoteMediaClient?.mediaStatus?.mediaInformation?.streamDuration;
+        return dur == TimeInterval.infinity ? 0 : Int(dur ?? 0) * 1000
     }
 
 }

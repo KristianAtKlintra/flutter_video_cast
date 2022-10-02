@@ -151,6 +151,11 @@ class MethodChannelChromeCast extends ChromeCastPlatform {
     );
   }
 
+  @override
+  Future<String?> metadata({required int id}) async {
+    return await channel(id)!.invokeMethod<String>('chromeCast#metadata');
+  }
+
   Future<dynamic> _handleMethodCall(MethodCall call, int id) async {
     switch (call.method) {
       case 'chromeCast#didStartSession':
