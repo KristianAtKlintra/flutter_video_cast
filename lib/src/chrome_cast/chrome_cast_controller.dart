@@ -87,7 +87,7 @@ class ChromeCastController {
     return _chromeCastPlatform.duration(id: id);
   }
 
-  Future<String?> metadata({required int id}) async {
+  Future<String?> metadata() async {
     return _chromeCastPlatform.metadata(id: id);
   }
 

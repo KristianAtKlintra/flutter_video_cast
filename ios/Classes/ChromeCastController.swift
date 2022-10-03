@@ -116,6 +116,9 @@ class ChromeCastController: NSObject, FlutterPlatformView {
         case "chromeCast#duration":
             result(duration())
             break
+        case "chromeCast#metadata":
+            result(metadata())
+            break
         default:
             result(nil)
             break
@@ -231,6 +234,13 @@ class ChromeCastController: NSObject, FlutterPlatformView {
     private func duration() -> Int {
         let dur = sessionManager.currentCastSession?.remoteMediaClient?.mediaStatus?.mediaInformation?.streamDuration;
         return dur == TimeInterval.infinity ? 0 : Int(dur ?? 0) * 1000
+    }
+
+    private func metadata() -> String? {
+        guard let metadata = sessionManager.currentCastSession?.remoteMediaClient?.mediaStatus?.mediaInformation?.metadata else {
+            return nil;
+        }
+        return GCKJSONUtils.writeJSON(metadata)
     }
 
 }
