@@ -240,7 +240,18 @@ class ChromeCastController: NSObject, FlutterPlatformView {
         guard let metadata = sessionManager.currentCastSession?.remoteMediaClient?.mediaStatus?.mediaInformation?.metadata else {
             return nil;
         }
-        return GCKJSONUtils.writeJSON(metadata)
+        var dict = [String: String]()
+        dict[kGCKMetadataKeyTitle] = metadata.string(forKey: kGCKMetadataKeyTitle)
+        dict[kGCKMetadataKeySubtitle] = metadata.string(forKey: kGCKMetadataKeySubtitle)
+        dict["Image"] = metadata.string(forKey: "Image")
+        
+        for k in metadata.allKeys() {
+            if(k.starts(with: "KVF_")){
+                dict[k] = metadata.string(forKey: k)
+            }
+        }
+        
+        return GCKJSONUtils.writeJSON(dict)
     }
 
 }
