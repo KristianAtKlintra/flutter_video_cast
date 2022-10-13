@@ -31,7 +31,8 @@ class ChromeCastController {
   }
 
   /// Load a new media by providing an [url].
-  Future<void> loadMediaQueue(Map<String, Map<String, dynamic>> mediaitems) {
+  Future<void> loadMediaQueue(
+      Map<String, List<Map<String, dynamic>>> mediaitems) {
     return _chromeCastPlatform.loadMediaQueue(mediaitems, id: id);
   }
 
