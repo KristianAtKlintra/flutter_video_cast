@@ -79,10 +79,8 @@ class MethodChannelChromeCast extends ChromeCastPlatform {
   }
 
   @override
-  Future<void> loadMediaQueue(
-      Map<String, List<Map<String, dynamic>>> mediaitems,
+  Future<void> loadMediaQueue(Map<String, List<Map<String, dynamic>>> args,
       {required int id}) {
-    final Map<String, dynamic> args = {'mediaitems': mediaitems};
     return channel(id)!.invokeMethod<void>('chromeCast#loadMediaQueue', args);
   }
 
