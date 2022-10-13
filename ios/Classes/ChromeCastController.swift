@@ -76,6 +76,10 @@ class ChromeCastController: NSObject, FlutterPlatformView {
             loadMedia(args: call.arguments)
             result(nil)
             break
+        case "chromeCast#loadMediaQueue":
+            loadMediaQueue(args: call.arguments)
+            result(nil)
+            break
         case "chromeCast#play":
             play()
             result(nil)
@@ -125,53 +129,80 @@ class ChromeCastController: NSObject, FlutterPlatformView {
         }
     }
 
-    /*private func loadMedia(args: Any?) {
-        guard
-            let args = args as? [String: Any],
-            let url = args["url"] as? String,
-            let mediaUrl = URL(string: url) else {
-                print("Invalid URL")
-                return
-        }
-        let mediaInformation = GCKMediaInformationBuilder(contentURL: mediaUrl).build()
-        if let request = sessionManager.currentCastSession?.remoteMediaClient?.loadMedia(mediaInformation) {
-            request.delegate = self
-        }
-    }*/
-
     private func loadMedia(args: Any?) {
         guard
             let args = args as? [String: Any],
-            let url = args["url"] as? String,
-            let mediaUrl = URL(string: url)  else {
+            let mediaInformation = getMediaInformation(from: args) else {
+                return
+        }
+                
+        if let request = sessionManager.currentCastSession?.remoteMediaClient?.loadMedia(mediaInformation) {
+            request.delegate = self
+        }
+    }
+    
+    private func loadMediaQueue(args: Any?){
+        guard
+            let args = args as? [String: Any],
+            let queue = args["mediaitems"] as? [[String: Any]]
+        else {
                 print("Invalid URL")
                 return
         }
         
+        var queueItems: [GCKMediaQueueItem] = []
+        for item in queue {
+            guard let mediaInformation = getMediaInformation(from: item) else {
+                continue
+            }
+            let builder = GCKMediaQueueItemBuilder.init()
+            builder.mediaInformation = mediaInformation
+            builder.autoplay = true
+            builder.preloadTime = 8.0
+            let newItem = builder.build()
+            queueItems.append(newItem)
+        }
+        
+        var rb = GCKMediaLoadRequestDataBuilder()
+        var qb = GCKMediaQueueDataBuilder.init(queueType: GCKMediaQueueType.videoPlayList)
+        qb.items = queueItems
+        qb.startIndex = 0
+        qb.name = "Kvf Vit"
+        qb.repeatMode = GCKMediaRepeatMode.off
+        
+        rb.queueData = qb.build()
+        
+        sessionManager.currentCastSession?.remoteMediaClient?.loadMedia(with: rb.build())
+    }
+    
+    private func getMediaInformation(from: [String: Any]) -> GCKMediaInformation?{
+        guard
+            let url = from["url"] as? String,
+            let mediaUrl = URL(string: url)  else {
+                print("Invalid URL")
+                return nil
+        }
         let metadata = GCKMediaMetadata()
-        if args.keys.contains(kGCKMetadataKeyTitle) {
-            metadata.setString(args[kGCKMetadataKeySubtitle] as! String, forKey: kGCKMetadataKeyTitle)
+        if from.keys.contains(kGCKMetadataKeyTitle) {
+            metadata.setString(from[kGCKMetadataKeySubtitle] as! String, forKey: kGCKMetadataKeyTitle)
         }
-        if args.keys.contains(kGCKMetadataKeySubtitle) {
-            metadata.setString(args[kGCKMetadataKeySubtitle] as! String, forKey: kGCKMetadataKeySubtitle)
+        if from.keys.contains(kGCKMetadataKeySubtitle) {
+            metadata.setString(from[kGCKMetadataKeySubtitle] as! String, forKey: kGCKMetadataKeySubtitle)
         }
-        if args.keys.contains("Image") {
-            metadata.addImage(GCKImage(url: URL(string: args["Image"] as! String)!, width: 960, height: 720))
+        if from.keys.contains("Image") {
+            metadata.addImage(GCKImage(url: URL(string: from["Image"] as! String)!, width: 960, height: 720))
         }
 
-        for k in args.keys {
+        for k in from.keys {
             if k.starts(with: "KVF_") {
-                metadata.setString(args[k] as! String, forKey: k)
+                metadata.setString(from[k] as! String, forKey: k)
             }
         }
 
         let mediaInformationBuilder = GCKMediaInformationBuilder(contentURL: mediaUrl)
         mediaInformationBuilder.metadata = metadata
         let mediaInformation = mediaInformationBuilder.build()
-        
-        if let request = sessionManager.currentCastSession?.remoteMediaClient?.loadMedia(mediaInformation) {
-            request.delegate = self
-        }
+        return mediaInformation;
     }
 
     private func play() {
