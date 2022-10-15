@@ -163,8 +163,8 @@ class ChromeCastController: NSObject, FlutterPlatformView {
             queueItems.append(newItem)
         }
         
-        var rb = GCKMediaLoadRequestDataBuilder()
-        var qb = GCKMediaQueueDataBuilder.init(queueType: GCKMediaQueueType.videoPlayList)
+        let rb = GCKMediaLoadRequestDataBuilder()
+        let qb = GCKMediaQueueDataBuilder.init(queueType: GCKMediaQueueType.videoPlayList)
         qb.items = queueItems
         qb.startIndex = 0
         qb.name = "Kvf Vit"
@@ -183,11 +183,11 @@ class ChromeCastController: NSObject, FlutterPlatformView {
                 return nil
         }
         let metadata = GCKMediaMetadata()
-        if from.keys.contains(kGCKMetadataKeyTitle) {
-            metadata.setString(from[kGCKMetadataKeySubtitle] as! String, forKey: kGCKMetadataKeyTitle)
+        if from.keys.contains("Title") {
+            metadata.setString(from["Title"] as! String, forKey: kGCKMetadataKeyTitle)
         }
-        if from.keys.contains(kGCKMetadataKeySubtitle) {
-            metadata.setString(from[kGCKMetadataKeySubtitle] as! String, forKey: kGCKMetadataKeySubtitle)
+        if from.keys.contains("Subtitle") {
+            metadata.setString(from["Subtitle"] as! String, forKey: kGCKMetadataKeySubtitle)
         }
         if from.keys.contains("Image") {
             metadata.addImage(GCKImage(url: URL(string: from["Image"] as! String)!, width: 960, height: 720))
