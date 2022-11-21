@@ -196,13 +196,13 @@ class ChromeCastController(
             return null
         }
         var dict = mutableMapOf<String, String?>()
-        dict[MediaMetadata.KEY_TITLE] = metadata.getDateAsString(MediaMetadata.KEY_TITLE)
-        dict[MediaMetadata.KEY_SUBTITLE] = metadata.getDateAsString(MediaMetadata.KEY_SUBTITLE)
-        dict["Image"] = metadata.getDateAsString("Image")
+        dict[MediaMetadata.KEY_TITLE] = metadata.getString(MediaMetadata.KEY_TITLE)
+        dict[MediaMetadata.KEY_SUBTITLE] = metadata.getString(MediaMetadata.KEY_SUBTITLE)
+        dict["Image"] = metadata.getString("Image")
 
         for( k in metadata.keySet()) {
             if( k.startsWith("KVF_")){
-                dict[k] = metadata.getDateAsString(k)
+                dict[k] = metadata.getString(k)
             }
         }
         return JSONObject(dict).toString()
