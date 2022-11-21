@@ -2,11 +2,10 @@ package it.aesys.flutter_video_cast
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import android.view.ContextThemeWrapper
 import androidx.mediarouter.app.MediaRouteButton
-import com.google.android.gms.cast.MediaInfo
-import com.google.android.gms.cast.MediaLoadOptions
-import com.google.android.gms.cast.MediaMetadata
+import com.google.android.gms.cast.*
 import com.google.android.gms.cast.framework.CastButtonFactory
 import com.google.android.gms.cast.framework.CastContext
 import com.google.android.gms.cast.framework.Session
@@ -18,11 +17,12 @@ import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.platform.PlatformView
+import org.json.JSONObject
 
 class ChromeCastController(
-        messenger: BinaryMessenger,
-        viewId: Int,
-        context: Context?
+    messenger: BinaryMessenger,
+    viewId: Int,
+    context: Context?
 ) : PlatformView, MethodChannel.MethodCallHandler, SessionManagerListener<Session>, PendingResult.StatusListener {
     private val channel = MethodChannel(messenger, "flutter_video_cast/chromeCast_$viewId")
     private val chromeCastButton = MediaRouteButton(ContextThemeWrapper(context, R.style.Theme_AppCompat_NoActionBar))
@@ -122,6 +122,10 @@ class ChromeCastController(
                 loadMedia(call.arguments)
                 result.success(null)
             }
+            "chromeCast#loadMediaQueue" -> {
+                loadMediaQueue(call.arguments)
+                result.success(null)
+            }
             "chromeCast#play" -> {
                 play()
                 result.success(null)
@@ -159,7 +163,106 @@ class ChromeCastController(
                 removeSessionListener()
                 result.success(null)
             }
+            "chromeCast#removeSessionListener" -> {
+                removeSessionListener()
+                result.success(null)
+            }
+            "chromeCast#position" -> {
+                result.success(position())
+            }
+
+            "chromeCast#presentDefaultExpandedMediaControls" -> {
+                presentDefaultExpandedMediaControls()
+                result.success(null)
+            }
+
+            "chromeCast#duration" -> {
+                result.success(duration())
+            }
+
+            "chromeCast#metadata" -> {
+                result.success(metadata())
+            }
         }
+    }
+
+    private fun presentDefaultExpandedMediaControls() {
+        //sessionManager?.currentCastSession?.remoteMediaClient?.
+    }
+
+    private fun metadata() : String? {
+        var metadata = sessionManager?.currentCastSession?.remoteMediaClient?.mediaStatus?.mediaInfo?.metadata
+        if( metadata == null ) {
+            return null
+        }
+        var dict = mutableMapOf<String, String?>()
+        dict[MediaMetadata.KEY_TITLE] = metadata.getDateAsString(MediaMetadata.KEY_TITLE)
+        dict[MediaMetadata.KEY_SUBTITLE] = metadata.getDateAsString(MediaMetadata.KEY_SUBTITLE)
+        dict["Image"] = metadata.getDateAsString("Image")
+
+        for( k in metadata.keySet()) {
+            if( k.startsWith("KVF_")){
+                dict[k] = metadata.getDateAsString(k)
+            }
+        }
+        return JSONObject(dict).toString()
+    }
+
+    private fun loadMediaQueue(args: Any?){
+        var args = args as? Map<String, Any?>
+        var queue = args?.get("mediaitems") as? List<Map<String, Any?>>
+        if(queue == null){
+            Log.d("ChromeCastController", "Invalid queue")
+            return
+        }
+
+        var queueItems = mutableListOf<MediaQueueItem>()
+
+        for(item in queue) {
+            var mediaInfo = getMediaInformation(item)
+            val queueItem: MediaQueueItem = MediaQueueItem.Builder(mediaInfo)
+                .setAutoplay(true)
+                .setPreloadTime(8.0)
+                .build()
+            queueItems.add(queueItem)
+        }
+        sessionManager?.currentCastSession?.remoteMediaClient?.queueLoad(
+            queueItems.toTypedArray(), //Items
+            0, //StartIndex
+            MediaStatus.REPEAT_MODE_REPEAT_OFF, //Repeat off
+            0, //playPosition
+            null //Custom Data
+        )
+    }
+
+    private fun getMediaInformation(from: Map<String, Any?>): MediaInfo? {
+
+        var url = from["url"] as? String
+        var mediaUrl = Uri.parse(url)
+
+        if(mediaUrl == null){
+            Log.d("ChromeCastController", "Invalid URL")
+            return null
+        }
+
+        var metadata = MediaMetadata()
+        if( from.containsKey("Title") ){
+            metadata.putString(MediaMetadata.KEY_TITLE, from["Title"] as? String)
+        }
+        if( from.containsKey("Subtitle") ){
+            metadata.putString(MediaMetadata.KEY_SUBTITLE, from["Subtitle"] as? String)
+        }
+        if( from.containsKey("Image") ){
+            metadata.addImage(WebImage(mediaUrl))
+        }
+
+        for( k in from.keys ) {
+            if (k.startsWith("KVF_")) {
+                metadata.putString(k, from[k] as? String)
+            }
+        }
+
+        return MediaInfo.Builder(url).setMetadata(metadata).build()
     }
 
     // SessionManagerListener
