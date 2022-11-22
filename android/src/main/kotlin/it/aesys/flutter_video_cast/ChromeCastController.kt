@@ -187,7 +187,7 @@ class ChromeCastController(
     }
 
     private fun presentDefaultExpandedMediaControls() {
-        //sessionManager?.currentCastSession?.remoteMediaClient?.
+        this.context?.startActivity(Intent(this.context, ExpandedControllerActivity::class.java))
     }
 
     private fun metadata() : String? {
