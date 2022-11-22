@@ -27,6 +27,7 @@ class ChromeCastController(
     private val channel = MethodChannel(messenger, "flutter_video_cast/chromeCast_$viewId")
     private val chromeCastButton = MediaRouteButton(ContextThemeWrapper(context, R.style.Theme_AppCompat_NoActionBar))
     private val sessionManager = CastContext.getSharedInstance()?.sessionManager
+    private val context = context
 
     init {
         CastButtonFactory.setUpMediaRouteButton(context, chromeCastButton)
