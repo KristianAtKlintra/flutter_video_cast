@@ -190,7 +190,13 @@ class ChromeCastController(
     }
 
     private fun presentDefaultExpandedMediaControls() {
-        this.context?.startActivity(Intent(this.context, ExpandedControllerActivity::class.java))
+        var packageName = this.context?.applicationContext?.packageName
+        var activityName= "ExpandedControlsActivity"
+        var intent = Intent().apply {
+            action = packageName + "." + activityName
+            type = "text/plain"
+        }
+        this.context?.startActivity(intent)
     }
 
     private fun metadata() : String? {
