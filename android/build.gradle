@@ -43,5 +43,5 @@ dependencies {
 
     //ChromeCast dependencies
     implementation 'com.google.android.gms:play-services-cast-framework:21.0.1'
-    implementation 'com.google.android.exoplayer:extension-cast:2.11.5'
+    implementation 'com.google.android.exoplayer:extension-cast:2.18.1'
 }
