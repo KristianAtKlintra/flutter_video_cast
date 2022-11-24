@@ -32,18 +32,18 @@ class ChromeCastController(
     private val context = context
 
     init {
-        CastButtonFactory.setUpMediaRouteButton(context, chromeCastButton)
+        CastButtonFactory.setUpMediaRouteButton(context!!, chromeCastButton)
         channel.setMethodCallHandler(this)
     }
 
     private fun loadMedia(args: Any?) {
         if (args is Map<*, *>) {
-            val url = args["url"] as? String
+            val url = args["url"] as String
 
             val meta = MediaMetadata(MediaMetadata.MEDIA_TYPE_GENERIC)
-            meta.putString(MediaMetadata.KEY_TITLE, args["title"] as? String)
-            meta.putString(MediaMetadata.KEY_ARTIST, args["artist"] as? String)
-            (args["image-url"] as? String).let{imageUrl ->
+            meta.putString(MediaMetadata.KEY_TITLE, args["title"] as String)
+            meta.putString(MediaMetadata.KEY_ARTIST, args["artist"] as String)
+            (args["image-url"] as String).let{imageUrl ->
                 meta.addImage(WebImage(Uri.parse(imageUrl)))
             }
 
@@ -229,7 +229,7 @@ class ChromeCastController(
 
         for(item in queue) {
             var mediaInfo = getMediaInformation(item)
-            val queueItem: MediaQueueItem = MediaQueueItem.Builder(mediaInfo)
+            val queueItem: MediaQueueItem = MediaQueueItem.Builder(mediaInfo!!)
                 .setAutoplay(true)
                 .setPreloadTime(8.0)
                 .build()
@@ -240,13 +240,18 @@ class ChromeCastController(
             0, //StartIndex
             MediaStatus.REPEAT_MODE_REPEAT_OFF, //Repeat off
             0, //playPosition
-            null //Custom Data
+            org.json.JSONObject() //Custom Data
         )
     }
 
     private fun getMediaInformation(from: Map<String, Any?>): MediaInfo? {
 
-        var url = from["url"] as? String
+        if(!from.containsKey("url")){
+            Log.d("ChromeCastController", "Invalid URL")
+            return null
+        }
+
+        var url = from["url"] as String
         var mediaUrl = Uri.parse(url)
 
         if(mediaUrl == null){
@@ -256,10 +261,10 @@ class ChromeCastController(
 
         var metadata = MediaMetadata()
         if( from.containsKey("Title") ){
-            metadata.putString(MediaMetadata.KEY_TITLE, from["Title"] as? String)
+            metadata.putString(MediaMetadata.KEY_TITLE, from["Title"] as String)
         }
         if( from.containsKey("Subtitle") ){
-            metadata.putString(MediaMetadata.KEY_SUBTITLE, from["Subtitle"] as? String)
+            metadata.putString(MediaMetadata.KEY_SUBTITLE, from["Subtitle"] as String)
         }
         if( from.containsKey("Image") ){
             metadata.addImage(WebImage(mediaUrl))
@@ -267,7 +272,7 @@ class ChromeCastController(
 
         for( k in from.keys ) {
             if (k.startsWith("KVF_")) {
-                metadata.putString(k, from[k] as? String)
+                metadata.putString(k, from[k] as String)
             }
         }
 
@@ -276,45 +281,45 @@ class ChromeCastController(
 
     // SessionManagerListener
 
-    override fun onSessionStarted(p0: Session?, p1: String?) {
+    override fun onSessionStarted(p0: Session, p1: String) {
         channel.invokeMethod("chromeCast#didStartSession", null)
     }
 
-    override fun onSessionEnded(p0: Session?, p1: Int) {
+    override fun onSessionEnded(p0: Session, p1: Int) {
         channel.invokeMethod("chromeCast#didEndSession", null)
     }
 
-    override fun onSessionResuming(p0: Session?, p1: String?) {
+    override fun onSessionResuming(p0: Session, p1: String) {
 
     }
 
-    override fun onSessionResumed(p0: Session?, p1: Boolean) {
+    override fun onSessionResumed(p0: Session, p1: Boolean) {
 
     }
 
-    override fun onSessionResumeFailed(p0: Session?, p1: Int) {
+    override fun onSessionResumeFailed(p0: Session, p1: Int) {
 
     }
 
-    override fun onSessionSuspended(p0: Session?, p1: Int) {
+    override fun onSessionSuspended(p0: Session, p1: Int) {
 
     }
 
-    override fun onSessionStarting(p0: Session?) {
+    override fun onSessionStarting(p0: Session) {
 
     }
 
-    override fun onSessionEnding(p0: Session?) {
+    override fun onSessionEnding(p0: Session) {
 
     }
 
-    override fun onSessionStartFailed(p0: Session?, p1: Int) {
+    override fun onSessionStartFailed(p0: Session, p1: Int) {
 
     }
 
     // PendingResult.StatusListener
 
-    override fun onComplete(status: Status?) {
+    override fun onComplete(status: Status) {
         if (status?.isSuccess == true) {
             channel.invokeMethod("chromeCast#requestDidComplete", null)
         }
