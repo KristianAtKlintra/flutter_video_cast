@@ -204,7 +204,7 @@ class ChromeCastController(
         if( metadata == null ) {
             return null
         }
-        var dict = mutableMapOf<String, String?>()
+        var dict = mutableMapOf<Any?, Any?>()
         dict[MediaMetadata.KEY_TITLE] = metadata.getString(MediaMetadata.KEY_TITLE)
         dict[MediaMetadata.KEY_SUBTITLE] = metadata.getString(MediaMetadata.KEY_SUBTITLE)
         dict["Image"] = metadata.getString("Image")
