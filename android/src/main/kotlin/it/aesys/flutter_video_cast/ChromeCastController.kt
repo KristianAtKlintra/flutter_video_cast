@@ -267,7 +267,7 @@ class ChromeCastController(
             metadata.putString(MediaMetadata.KEY_SUBTITLE, from["Subtitle"] as String)
         }
         if( from.containsKey("Image") ){
-            metadata.addImage(WebImage(from["Image"]))
+            metadata.addImage(WebImage(from["Image"] as String))
         }
 
         for( k in from.keys ) {
